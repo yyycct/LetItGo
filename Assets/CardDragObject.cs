@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,6 +17,19 @@ public class CardDragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
         canvasGroup = GetComponent<CanvasGroup>();
         parent = transform.parent;
       
+    }
+    public void InitializeCard(Card _card)
+    {
+        card = _card;
+        transform.GetComponentInChildren<TextMeshProUGUI>().text = card.name;
+        if(card.cardType == CardType.Action)
+        {
+            isAction = true;
+        }
+        else
+        {
+            isAction = false;
+        }
     }
     public void OnBeginDrag(PointerEventData eventData)
     {

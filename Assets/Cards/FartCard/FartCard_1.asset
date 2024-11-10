@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FartCard_1
   m_EditorClassIdentifier: 
   card:
-    name: Fart 1
+    name: Loud fart
     description: No Smell but reaaallly loud
     cardType: 1
     image: {fileID: 0}

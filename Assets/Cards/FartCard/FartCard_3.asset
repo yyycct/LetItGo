@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FartCard_3
   m_EditorClassIdentifier: 
   card:
-    name: Fart 3
+    name: Average Fart
     description: Average Fart
     cardType: 1
     image: {fileID: 0}

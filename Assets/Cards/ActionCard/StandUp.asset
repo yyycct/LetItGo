@@ -17,11 +17,11 @@ MonoBehaviour:
     description: stand up
     cardType: 0
     image: {fileID: 0}
-    RewardValue:
+    oneTimeUse: 0
+    Value:
       attention: -40
       smell: 0
       sound: 0
-    PunishmentValue:
-      attention: 40
-      smell: 0
-      sound: 0
+    InappropriateEnvironmentCards: []
+    ReasonablePreviousActionCardNames: []
+    ReasonableNextActionCardNames: []

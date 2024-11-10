@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FartCard_2
   m_EditorClassIdentifier: 
   card:
-    name: Fart 2
+    name: Smelly Fart
     description: Smelly but silent
     cardType: 1
     image: {fileID: 0}

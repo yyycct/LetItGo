@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21818fe439f8e034596872e83236480b, type: 3}
+  m_Name: Yawn
+  m_EditorClassIdentifier: 
+  card:
+    name: Yawn
+    description: 
+    cardType: 0
+    image: {fileID: 0}
+    oneTimeUse: 0
+    Value:
+      attention: -30
+      smell: 0
+      sound: -10
+    InappropriateEnvironmentCards:
+    - {fileID: 11400000, guid: 68f4e7749125644258bea94ea498a564, type: 2}
+    - {fileID: 11400000, guid: b3f7f0b3455a1448db3db1438a015f2b, type: 2}
+    ReasonablePreviousActionCardNames: []
+    ReasonableNextActionCardNames: []
