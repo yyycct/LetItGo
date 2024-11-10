@@ -17,6 +17,7 @@ MonoBehaviour:
     description: 
     cardType: 2
     image: {fileID: 0}
+    AttentionDamageMultiplier: 0
     SoundDamageMultiplier: 0
     SmellDamageMultiplier: 2
     InappropriatePunishmentValue:

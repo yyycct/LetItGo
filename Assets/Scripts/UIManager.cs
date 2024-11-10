@@ -8,12 +8,9 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     private GameManager gameManager;
-    public void Start()
-    {
-        // Find GameManager.cs and assign it to gameManager
-        gameManager = FindObjectOfType<GameManager>();
-        instance = this;
-    }
+
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private GameObject losePanel;
 
     [SerializeField] private GameObject actionCardInventorySlot;
     [SerializeField] private GameObject fartCardInventorySlot;
@@ -28,6 +25,41 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject soundSlider;
 
+    public void Awake()
+    {
+        instance = this;
+    }
+
+    public void Start()
+    {
+        // Find GameManager.cs and assign it to gameManager
+        gameManager = FindObjectOfType<GameManager>();
+        winPanel.SetActive(false);
+        losePanel.SetActive(false);
+    }
+
+    public void CleanUp()
+    {
+        // Clean up the cards
+        foreach (Transform child in actionCardInventorySlot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in fartCardInventorySlot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in actionCardsSlotParent.transform)
+        {
+            if (child.childCount != 0)
+                Destroy(child.GetChild(0).gameObject);
+        }
+        foreach (Transform child in fartCardSlotParent.transform)
+        {
+            if (child.childCount != 0)
+                Destroy(child.GetChild(0).gameObject);
+        }
+    }
     public void spawnActionCards(List<ActionCard> actionCards)
     {
         if (actionCards.Count <= 0)
@@ -56,7 +88,6 @@ public class UIManager : MonoBehaviour
     
         Debug.Log("Spawning environment card");
         GameObject text = environmentCardUI.transform.GetChild(0).gameObject;
-        Debug.Log(text);
         text.GetComponent<TextMeshProUGUI>().text = environmentCard.name;
     }
 
@@ -89,6 +120,16 @@ public class UIManager : MonoBehaviour
     public void UpdateSoundSlider(float value){
         Vector2 size = soundSlider.GetComponent<RectTransform>().sizeDelta;
         soundSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, size.y);
+    }
+
+    public void ShowWinPanel()
+    {
+        winPanel.SetActive(true);
+    }
+
+    public void ShowLosePanel()
+    {
+        losePanel.SetActive(true);
     }
 
     private bool checkifActionSlotFilled(){

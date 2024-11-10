@@ -13,16 +13,18 @@ public class GameManager : MonoBehaviour
     public List<ActionCardObject> actionCards = new List<ActionCardObject>();
     public List<FartCardObject> fartCards = new List<FartCardObject>();
     public List<EnvironmentObject> environmentCards = new List<EnvironmentObject>();
-
+    
     public int actionCardsPerRound = 3;
+    public int roundSmellDecrease = 10;
     // private int fartCardsPerRound = 1;
     // private int environmentCardsPerRound = 1;
     private UIManager uiManager;
-    private EnvironmentCard pickedEnvironmentCard;
-
+    private EnvironmentCard pickedEnvironmentCard = new EnvironmentCard();
+    
     private int CurrentGas = 100;
     private int CurrentSmell = 0;
     private int CurrentSound = 0;
+    private int round = 0;
 
     // Game loop:
     // 1. Get one random fart card, one random environment card, and three random action cards
@@ -33,19 +35,46 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         uiManager = UIManager.instance;
+        ShuffleEnvCards();
+        GameLoopSetup();
+    }
+    
+    private void GameLoopSetup()
+    {
+        // Clean up the cards first
+        CleanUp();
+        // Draw the cards
         DrawEnvironmentCard();
         DrawFartCard();
         DrawActionCards();
-        pickedEnvironmentCard = new EnvironmentCard();
     }
-    public void Update()
+
+    private void CleanUp()
     {
+        // Clean up the cards
+        uiManager.CleanUp();
+
+        // Decrease the smell damage every round
+        CurrentSmell -= roundSmellDecrease;
+        if (CurrentSmell < 0) CurrentSmell = 0;
+        uiManager.UpdateSmellSlider(CurrentSmell);
+    }
+
+    public void ShuffleEnvCards(){
+        // shuffle the environment cards
+        for (int i = 0; i < environmentCards.Count; i++)
+        {
+            EnvironmentObject temp = environmentCards[i];
+            int randomIndex = Random.Range(i, environmentCards.Count);
+            environmentCards[i] = environmentCards[randomIndex];
+            environmentCards[randomIndex] = temp;
+        }
     }
 
     public void DrawEnvironmentCard()
     {
         // Draw a random environment card
-        pickedEnvironmentCard = environmentCards[Random.Range(0, environmentCards.Count)].card;
+        pickedEnvironmentCard = environmentCards[round].card;
         uiManager.spawnEnvironmentCard(pickedEnvironmentCard);
     }
 
@@ -61,11 +90,25 @@ public class GameManager : MonoBehaviour
     {
         // Draw three random action cards
         List<ActionCard> pickedActionCards = new List<ActionCard>();
+
+        // Shuffle the action cards
+        for (int i = 0; i < actionCards.Count; i++)
+        {
+            ActionCardObject temp = actionCards[i];
+            int randomIndex = Random.Range(i, actionCards.Count);
+            actionCards[i] = actionCards[randomIndex];
+            actionCards[randomIndex] = temp;
+        }
+        // Pick the first three action cards
         for (int i = 0; i < actionCardsPerRound; i++)
         {
-            ActionCardObject pickedActionCard = new ActionCardObject();
-            pickedActionCard = actionCards[Random.Range(0, actionCards.Count)];
-            pickedActionCards.Add(pickedActionCard.card);
+            pickedActionCards.Add(actionCards[i].card);
+
+            // Remove one-time-use action cards from the list
+            if (actionCards[i].card.oneTimeUse)
+            {
+                actionCards.Remove(actionCards[i]);
+            }
         }
         uiManager.spawnActionCards(pickedActionCards);
     }
@@ -76,8 +119,7 @@ public class GameManager : MonoBehaviour
         int fartDamageSound = fartCardPlayed.soundAmount;
         int fartDamageSmell = fartCardPlayed.smellAmount;
 
-        Debug.Log("fartDamageSound: " + fartDamageSound);
-        Debug.Log("fartDamageSmell: " + fartDamageSmell);
+        Debug.Log("initial sound/smell damage: " + fartDamageSound + "/" + fartDamageSmell);
 
         foreach (ActionCard actionCard in acitonCardsPlayed)
         {
@@ -100,9 +142,8 @@ public class GameManager : MonoBehaviour
 
             if (fartDamageSound < 0) fartDamageSound = 0;
             if (fartDamageSmell < 0) fartDamageSmell = 0;
+            Debug.Log("sound/smell damage after action card: " + fartDamageSound + "/" + fartDamageSmell);
         }
-        Debug.Log("fartDamageSound2: " + fartDamageSound);
-        Debug.Log("fartDamageSmell2: " + fartDamageSmell);
 
         // finally apply the environment buffs
         float envAttention = pickedEnvironmentCard.AttentionDamageMultiplier;
@@ -127,24 +168,27 @@ public class GameManager : MonoBehaviour
             envAttention = pickedEnvironmentCard.InappropriatePunishmentValue.attention;
             envSound = pickedEnvironmentCard.InappropriatePunishmentValue.sound;
             envSmell = pickedEnvironmentCard.InappropriatePunishmentValue.smell;
+            Debug.Log("Inappropriate environment card");
         }
 
         // calculate the damage
         if (envAttention > 0)
         {
-            fartDamageSound = times(fartDamageSound, envAttention);
-            fartDamageSmell = times(fartDamageSmell, envAttention);
+            float attentionMultiplier = 1.0f + (envAttention / 100.0f);
+            fartDamageSound = times(fartDamageSound, attentionMultiplier);
+            fartDamageSmell = times(fartDamageSmell, attentionMultiplier);
         }
-        if (envSound > 0)
-        {
-            fartDamageSound = times(fartDamageSound, envSound);
+        else {
+            if (envSound > 0)
+            {
+                fartDamageSound = times(fartDamageSound, envSound);
+            }
+            if (envSmell > 0)
+            {
+                fartDamageSmell = times(fartDamageSmell, envSmell);
+            }
         }
-        if (envSmell > 0)
-        {
-            fartDamageSmell = times(fartDamageSmell, envSmell);
-        }
-        Debug.Log("fartDamageSound4: " + fartDamageSound);
-        Debug.Log("fartDamageSmell4: " + fartDamageSmell);
+        Debug.Log("sound/smell damage after environment card: " + fartDamageSound + "/" + fartDamageSmell);
 
         // update the player stats
         CurrentGas -= fartCardPlayed.gasAmount;
@@ -155,6 +199,18 @@ public class GameManager : MonoBehaviour
         uiManager.UpdateGasSlider(CurrentGas);
         uiManager.UpdateSmellSlider(CurrentSmell);
         uiManager.UpdateSoundSlider(CurrentSound);
+
+        // check if the game is over
+        if (IsEnd())
+        {
+            // end the game
+        }
+        else
+        {
+            // continue the game
+            round++;
+            GameLoopSetup();
+        }
     }
 
     // On play button click
@@ -186,9 +242,21 @@ public class GameManager : MonoBehaviour
     }
 
     // Determine the end of the game
-    public void EndGame()
+    public bool IsEnd()
     {
-        // End the game
+        if (CurrentGas <= 0 && CurrentSmell < 100 && CurrentSound < 100)
+        {
+            Debug.Log("You WIN!");
+            uiManager.ShowWinPanel();
+            return true;
+        }
+        else if (CurrentSmell >= 100 || CurrentSound >= 100)
+        {
+            Debug.Log("You LOSE!");
+            uiManager.ShowLosePanel();
+            return true;
+        }
+        return false;
     }
 
     private int times(int v, float multiplier) {
