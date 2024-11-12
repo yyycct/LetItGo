@@ -18,5 +18,5 @@ MonoBehaviour:
     cardType: 1
     image: {fileID: 0}
     soundAmount: 0
-    smellAmount: 40
+    smellAmount: 60
     gasAmount: 20

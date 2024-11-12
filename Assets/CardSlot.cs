@@ -10,7 +10,7 @@ public class CardSlot : MonoBehaviour, IDropHandler
     public GameObject inventoryParent;
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("OnDrop");
+        //Debug.Log("OnDrop");
         if (transform.childCount == 0||isInventory)
         {
             GameObject cardDropped = eventData.pointerDrag;      

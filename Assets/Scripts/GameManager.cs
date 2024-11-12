@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     
     public int actionCardsPerRound = 3;
     public int roundSmellDecrease = 10;
+    [Tooltip("The multiplier for the unmatch index, fart card is not under the action card")]
+    public float unmatchIndexMultiplier = 0.5f;
     // private int fartCardsPerRound = 1;
     // private int environmentCardsPerRound = 1;
     private UIManager uiManager;
@@ -40,7 +42,8 @@ public class GameManager : MonoBehaviour
     }
     
     private void GameLoopSetup()
-    {
+    {   
+        uiManager.showPlayCardPanel();
         // Clean up the cards first
         CleanUp();
         // Draw the cards
@@ -113,7 +116,7 @@ public class GameManager : MonoBehaviour
         uiManager.spawnActionCards(pickedActionCards);
     }
 
-    public void CalculateScore(List<ActionCard> acitonCardsPlayed, FartCard fartCardPlayed)
+    public void CalculateScore(List<ActionCard> acitonCardsPlayed, FartCard fartCardPlayed, int fartCardIndex)
     {
         // Calculate the score
         int fartDamageSound = fartCardPlayed.soundAmount;
@@ -123,9 +126,24 @@ public class GameManager : MonoBehaviour
 
         foreach (ActionCard actionCard in acitonCardsPlayed)
         {
+            if (actionCard == null) continue;
+
             int attention = actionCard.Value.attention;
             int smell = actionCard.Value.smell;
             int sound = actionCard.Value.sound;
+
+            // calculate the index matching
+            int actionIndex = acitonCardsPlayed.IndexOf(actionCard);
+
+            if (fartCardIndex != actionIndex)
+            {
+                Debug.Log("attention/sound/smell before unmatch index multiplier: " + attention + "/" + sound + "/" + smell);
+                Debug.Log("unmatch index, fart index: " + fartCardIndex + ", action index: " + actionIndex);
+                attention = times(attention, unmatchIndexMultiplier);
+                smell = times(smell, unmatchIndexMultiplier);
+                sound = times(sound, unmatchIndexMultiplier);
+                Debug.Log("attention/sound/smell unmatch index multiplier: " + attention + "/" + sound + "/" + smell);
+            }
 
             float attentionMultiplier = 1.0f + (attention / 100.0f);
             // calculate the damage
@@ -152,6 +170,7 @@ public class GameManager : MonoBehaviour
         bool isInappropriate = false;
         foreach (ActionCard actionCard in acitonCardsPlayed)
         {
+            if (actionCard == null) continue;
             // determine the scene sensitivity
             foreach (EnvironmentObject InappropriateEnvironmentCard in actionCard.InappropriateEnvironmentCards)
             {
@@ -169,6 +188,7 @@ public class GameManager : MonoBehaviour
             envSound = pickedEnvironmentCard.InappropriatePunishmentValue.sound;
             envSmell = pickedEnvironmentCard.InappropriatePunishmentValue.smell;
             Debug.Log("Inappropriate environment card");
+            Debug.Log("attention/sound/smell inappropriate environment multiplier: " + envAttention + "/" + envSound + "/" + envSmell);
         }
 
         // calculate the damage
@@ -218,6 +238,7 @@ public class GameManager : MonoBehaviour
     {
         // Player place the cards
         List<ActionCard> actionCardsPlayed = new List<ActionCard>();
+        
         int fartCardPlayedIndex = -1;
         FartCard fartCardPlayed = new FartCard();
         foreach(Transform child in actionCardParent.transform)
@@ -226,6 +247,8 @@ public class GameManager : MonoBehaviour
             {
                 ActionCard card = (ActionCard)child.GetChild(0).GetComponent<CardDragObject>().card;
                 actionCardsPlayed.Add(card);
+            } else {
+                actionCardsPlayed.Add(null);
             }
         }
         for(int i = 0; i<fartCardParent.transform.childCount; i++)
@@ -238,21 +261,23 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        CalculateScore(actionCardsPlayed, fartCardPlayed);
+        CalculateScore(actionCardsPlayed, fartCardPlayed, fartCardPlayedIndex);
     }
 
     // Determine the end of the game
     public bool IsEnd()
     {
-        if (CurrentGas <= 0 && CurrentSmell < 100 && CurrentSound < 100)
+        if (CurrentGas <= 0 && CurrentSmell + CurrentSound < 100)
         {
             Debug.Log("You WIN!");
+            uiManager.hidePlayCardPanel();
             uiManager.ShowWinPanel();
             return true;
         }
-        else if (CurrentSmell >= 100 || CurrentSound >= 100)
+        else if (CurrentSmell + CurrentSound >= 100)
         {
             Debug.Log("You LOSE!");
+            uiManager.hidePlayCardPanel();
             uiManager.ShowLosePanel();
             return true;
         }

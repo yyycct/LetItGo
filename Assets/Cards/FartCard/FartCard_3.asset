@@ -17,6 +17,6 @@ MonoBehaviour:
     description: Average Fart
     cardType: 1
     image: {fileID: 0}
-    soundAmount: 20
-    smellAmount: 20
+    soundAmount: 30
+    smellAmount: 30
     gasAmount: 20

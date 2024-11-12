@@ -33,7 +33,7 @@ public class CardDragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("begin drag");
+        // Debug.Log("begin drag");
         canvasGroup.blocksRaycasts = false;
         transform.parent = transform.root;
        
@@ -48,7 +48,7 @@ public class CardDragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("onEnd Drag");
+        // Debug.Log("onEnd Drag");
         transform.parent = parent;
         canvasGroup.blocksRaycasts = true;
     }

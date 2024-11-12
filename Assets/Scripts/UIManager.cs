@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     private GameManager gameManager;
 
+    [SerializeField] private GameObject PlayCardPanel;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject losePanel;
 
@@ -36,6 +37,16 @@ public class UIManager : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         winPanel.SetActive(false);
         losePanel.SetActive(false);
+    }
+
+    public void showPlayCardPanel()
+    {
+        PlayCardPanel.SetActive(true);
+    }
+
+    public void hidePlayCardPanel()
+    {
+        PlayCardPanel.SetActive(false);
     }
 
     public void CleanUp()

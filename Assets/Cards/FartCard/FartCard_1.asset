@@ -17,6 +17,6 @@ MonoBehaviour:
     description: No Smell but reaaallly loud
     cardType: 1
     image: {fileID: 0}
-    soundAmount: 40
+    soundAmount: 60
     smellAmount: 0
     gasAmount: 20
