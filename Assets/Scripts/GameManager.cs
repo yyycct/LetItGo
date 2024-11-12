@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
         // Decrease the smell damage every round
         CurrentSmell -= roundSmellDecrease;
         if (CurrentSmell < 0) CurrentSmell = 0;
-        uiManager.UpdateSmellSlider(CurrentSmell);
+        uiManager.UpdateSmellSlider(CurrentSmell, 1.0f);
     }
 
     public void ShuffleEnvCards(){
@@ -217,20 +217,20 @@ public class GameManager : MonoBehaviour
 
         // update the UI
         uiManager.UpdateGasSlider(CurrentGas);
-        uiManager.UpdateSmellSlider(CurrentSmell);
-        uiManager.UpdateSoundSlider(CurrentSound);
-
-        // check if the game is over
-        if (IsEnd())
-        {
-            // end the game
-        }
-        else
-        {
-            // continue the game
-            round++;
-            GameLoopSetup();
-        }
+        uiManager.UpdateSmellSlider(CurrentSmell, 1.0f);
+        uiManager.UpdateSoundSlider(CurrentSound, 1.0f, () => {
+            // check if the game is over
+            if (IsEnd())
+            {
+                // end the game
+            }
+            else
+            {
+                // continue the game
+                round++;
+                GameLoopSetup();
+            }
+        });
     }
 
     // On play button click

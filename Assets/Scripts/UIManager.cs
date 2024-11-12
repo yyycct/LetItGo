@@ -123,14 +123,52 @@ public class UIManager : MonoBehaviour
         gasSlider.GetComponent<Slider>().value = value/100.0f;
     }
 
-    public void UpdateSmellSlider(float value){
-        Vector2 size = smellSlider.GetComponent<RectTransform>().sizeDelta;
-        smellSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, size.y);
+    public void UpdateSmellSlider(float value, float duration, System.Action callback = null)
+    {
+        StartCoroutine(AnimateSmellSlider(value, duration, callback));
     }
 
-    public void UpdateSoundSlider(float value){
-        Vector2 size = soundSlider.GetComponent<RectTransform>().sizeDelta;
-        soundSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, size.y);
+    private IEnumerator AnimateSmellSlider(float targetValue, float duration, System.Action callback)
+    {
+        RectTransform rectTransform = smellSlider.GetComponent<RectTransform>();
+        Vector2 initialSize = rectTransform.sizeDelta;
+        Vector2 targetSize = new Vector2(targetValue, initialSize.y);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            rectTransform.sizeDelta = Vector2.Lerp(initialSize, targetSize, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        rectTransform.sizeDelta = targetSize;
+
+        callback?.Invoke();
+    }
+
+    public void UpdateSoundSlider(float value, float duration, System.Action callback = null)
+    {
+        StartCoroutine(AnimateSoundSlider(value, duration, callback));
+    }
+
+    private IEnumerator AnimateSoundSlider(float targetValue, float duration, System.Action callback)
+    {
+        RectTransform rectTransform = soundSlider.GetComponent<RectTransform>();
+        Vector2 initialSize = rectTransform.sizeDelta;
+        Vector2 targetSize = new Vector2(targetValue, initialSize.y);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            rectTransform.sizeDelta = Vector2.Lerp(initialSize, targetSize, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        rectTransform.sizeDelta = targetSize;
+
+        callback?.Invoke();
     }
 
     public void ShowWinPanel()
