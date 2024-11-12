@@ -1,0 +1,78 @@
+
+using UnityEngine;
+using System;
+
+public class AnimatorBrain : MonoBehaviour
+{
+    private readonly static int[] animations =
+    {
+        Animator.StringToHash("Sit Idle1"),
+        Animator.StringToHash("Sit Idle2"),
+        Animator.StringToHash("Stand Up"),
+        Animator.StringToHash("Clipping"),
+        Animator.StringToHash("Playing Dumb"),
+        Animator.StringToHash("Stretch")
+    };
+
+    private Animator animator;
+    private Animations[] currentAnimation;
+    private bool[] layerLocked;
+    private Action<int> DefaultAnimation;
+
+    protected void Initialize(int layers, Animations startingAnimation, Animator animator, Action<int> DefaultAnimation)
+    {
+        layerLocked = new bool[layers];
+        currentAnimation = new Animations[layers];
+        this.animator = animator;
+        this.DefaultAnimation = DefaultAnimation;
+
+        for (int i = 0; i < layers; i++)
+        {
+            layerLocked[i] = false;
+            currentAnimation[i] = startingAnimation;
+        }
+    }
+
+    public Animations GetCurrentAnimation(int layer)
+    {
+        return currentAnimation[layer];
+    }
+
+    public void SetLocked(bool lockLayer, int layer)
+    {
+        layerLocked[layer] = lockLayer;
+    }
+
+    public void Play(Animations animation, int layer, bool lockLayer, bool bypassLock, float crossfade = 0.2f)
+    {
+        if (animation == Animations.NONE)
+        {
+            DefaultAnimation(layer);
+            return;
+        }
+
+        if (layerLocked[layer] && !bypassLock) return;
+        layerLocked[layer] = lockLayer;
+
+        if (bypassLock)
+            foreach (var item in animator.GetBehaviours<OnExit>())
+                if (item.layerIndex == layer)
+                    item.cancel = true;
+
+        if (currentAnimation[layer] == animation) return;
+
+        currentAnimation[layer] = animation;
+        animator.CrossFade(animations[(int)currentAnimation[layer]], crossfade, layer);
+    }
+}
+
+public enum Animations
+{
+    SITIDLE1,
+    SITIDLE2,
+    STANDUP,
+    CLIPPING,
+    PLAYDUMB,
+    STRETCH,
+    NONE
+}
