@@ -16,7 +16,7 @@ public class Card
     public string description;
     public CardType cardType;
     public Image image;
-
+    public Animations animation;
 }
 
 [System.Serializable]

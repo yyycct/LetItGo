@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     
     private void GameLoopSetup()
     {   
-        uiManager.showPlayCardPanel();
+        //uiManager.showPlayCardPanel();
         // Clean up the cards first
         CleanUp();
         // Draw the cards
@@ -223,16 +223,21 @@ public class GameManager : MonoBehaviour
             if (IsEnd())
             {
                 // end the game
+                AnimationController.instance.Play(Animations.DISBELIEF, 1, true, true);
             }
             else
             {
                 // continue the game
                 round++;
-                GameLoopSetup();
+
+                //GameLoopSetup();
             }
         });
     }
+    public void TriggerAnimation(List<ActionCard> acitonCardsPlayed, FartCard fartCardPlayed, int fartCardIndex)
+    {
 
+    }
     // On play button click
     public void OnPlayButtonClicked(GameObject actionCardParent, GameObject fartCardParent)
     {
@@ -260,7 +265,6 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-
         CalculateScore(actionCardsPlayed, fartCardPlayed, fartCardPlayedIndex);
     }
 

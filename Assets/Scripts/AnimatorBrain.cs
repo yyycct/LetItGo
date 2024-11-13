@@ -9,9 +9,11 @@ public class AnimatorBrain : MonoBehaviour
         Animator.StringToHash("Sit Idle1"),
         Animator.StringToHash("Sit Idle2"),
         Animator.StringToHash("Stand Up"),
-        Animator.StringToHash("Clipping"),
+        Animator.StringToHash("Clapping"),
         Animator.StringToHash("Playing Dumb"),
-        Animator.StringToHash("Stretch")
+        Animator.StringToHash("Stretch"),
+        Animator.StringToHash("Disbelief"),
+        Animator.StringToHash("Crouching")
     };
 
     private Animator animator;
@@ -71,8 +73,26 @@ public enum Animations
     SITIDLE1,
     SITIDLE2,
     STANDUP,
-    CLIPPING,
+    CLAPPING,
     PLAYDUMB,
     STRETCH,
+    DISBELIEF,
+    Crouching,
     NONE
+}
+public class AnimationPlayEvent
+{
+    public Animations animation;
+    public int[] layers;
+    public bool lockLayer;
+    public bool bypassLayer;
+
+    public AnimationPlayEvent(Animations ani, int[] _layers, bool _lockLayer, bool _bypassLayer)
+    {
+        animation = ani;
+        layers = _layers;
+        lockLayer = _lockLayer;
+        bypassLayer = _bypassLayer;
+    }
+
 }
