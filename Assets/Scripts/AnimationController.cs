@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AnimationController : AnimatorBrain
 {
@@ -14,6 +16,7 @@ public class AnimationController : AnimatorBrain
     private const int UPPERBODY = 1;
     private Queue<AnimationPlayEvent> listOfAnimationToPlay;
     public bool StartPlayingQueue = false;
+    public UnityEvent OnQueueFinished;
     private void Awake()
     {
         instance = this;
@@ -25,8 +28,12 @@ public class AnimationController : AnimatorBrain
         _animator = GetComponent<Animator>();
         Initialize(2, Animations.SITIDLE1, _animator, DefaultAnimation);
         listOfAnimationToPlay = new Queue<AnimationPlayEvent>();
-        addToList(Animations.STANDUP, new int[] { 0, 1 }, false, false);
-        addToList(Animations.CLAPPING, new int[] { 1 }, false, false);
+        if(OnQueueFinished == null)
+        {
+            OnQueueFinished = new UnityEvent();
+        }
+/*        addToList(Animations.STANDUP, new int[] { 0, 1 }, false, false);
+        addToList(Animations.CLAPPING, new int[] { 1 }, false, false);*/
     }
 
     // Update is called once per frame
@@ -52,10 +59,7 @@ public class AnimationController : AnimatorBrain
             playDumb();
             _playDumb = false;
         }
-        if (StartPlayingQueue)
-        {
-            StartQueue();
-        }
+
     }
     private void standUp()
     {
@@ -80,34 +84,44 @@ public class AnimationController : AnimatorBrain
     {
         Play(Animations.PLAYDUMB, UPPERBODY, false, true);
     }
-    private void addToList(Animations animations, int[] layers, bool lockLayer, bool bypassLock)
+    public int GetListCount() { return listOfAnimationToPlay.Count; }
+    public void addToList(Animations animations, int[] layers, bool lockLayer, bool bypassLock)
     {
+        Debug.Log("Added animation" + animations);
         AnimationPlayEvent newEvent = new AnimationPlayEvent(animations, layers, lockLayer, bypassLock);
         listOfAnimationToPlay.Enqueue(newEvent);
     }
 
     public AnimationPlayEvent GetNextOnList()
     {
-        if (listOfAnimationToPlay.Count <= 0)
-        {
-            StartPlayingQueue = false;
-            return null;
-        }
+        Debug.Log("GetNextOnList");
         return listOfAnimationToPlay.Dequeue();
     }
 
     public void StartQueue()
     {
+        Debug.Log("StartQueue");
+        StartPlayingQueue = true;
+
         if (listOfAnimationToPlay.Count <= 0)
         {
-            Debug.Log(listOfAnimationToPlay.Count);
             return;
         }
-        AnimationPlayEvent playEvent = listOfAnimationToPlay.Dequeue();
+        AnimationPlayEvent playEvent = GetNextOnList();
         foreach (int l in playEvent.layers)
         {
             Play(playEvent.animation, l, playEvent.lockLayer, playEvent.bypassLayer);
         }
+    }
+    public void FinishedQueue()
+    {
+        StartPlayingQueue = false;
+        OnQueueFinished.Invoke();
+        Debug.Log("Invoke");
+    }
+    public void SelfReferencedEventCallback()
+    {
+        Debug.Log("TimedEvent.SelfReferencedEventCallback is called", this);
     }
     void DefaultAnimation(int layer)
     {

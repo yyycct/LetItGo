@@ -22,14 +22,15 @@ public class OnExit : StateMachineBehaviour
         }
         if (AnimationController.instance.StartPlayingQueue)
         {
-            AnimationPlayEvent playEvent = AnimationController.instance.GetNextOnList();
-            if (playEvent != null)
+            if (AnimationController.instance.GetListCount() <= 0)
             {
-                animation = playEvent.animation;
-                lockLayer = playEvent.lockLayer;
-                AnimationController.instance.StartCoroutine(WaitLayers(playEvent.layers));
-
+                AnimationController.instance.StartCoroutine(FinishQueue());
             }
+            else
+            {
+                AnimationController.instance.StartCoroutine(ContinueQueue());
+            }
+            
         }
         
         else
@@ -48,19 +49,20 @@ public class OnExit : StateMachineBehaviour
             target.SetLocked(false, layerIndex);
             target.Play(animation, layerIndex, lockLayer, false, crossfade);
         }
-        IEnumerator WaitLayers(int[] layers)
+        IEnumerator ContinueQueue()
         {
             yield return new WaitForSeconds(stateInfo.length - crossfade);
-
-            if (cancel) yield break;
             AnimatorBrain target = animator.GetComponent<AnimatorBrain>();
-            foreach (int l in layers)
-            {
-                target.SetLocked(false, l);
-                target.Play(animation, l, lockLayer, false, crossfade);
-            }
-            
-            
+            target.SetLocked(false, layerIndex);
+            AnimationController.instance.StartQueue();
+        }
+        IEnumerator FinishQueue()
+        {
+            yield return new WaitForSeconds(stateInfo.length - crossfade);
+            AnimatorBrain target = animator.GetComponent<AnimatorBrain>();
+            target.SetLocked(false, layerIndex);
+            target.Play(animation, layerIndex, lockLayer, false, crossfade);
+            AnimationController.instance.FinishedQueue();
         }
     }
 }

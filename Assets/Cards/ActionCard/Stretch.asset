@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Stretch
   m_EditorClassIdentifier: 
   card:
-    name: Streth
+    name: Stretch
     description: 
     cardType: 0
     image: {fileID: 0}
+    animation: 5
     oneTimeUse: 0
     Value:
       attention: -20

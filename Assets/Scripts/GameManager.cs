@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     
     private void GameLoopSetup()
     {   
-        //uiManager.showPlayCardPanel();
+        uiManager.showPlayCardPanel();
         // Clean up the cards first
         CleanUp();
         // Draw the cards
@@ -216,6 +216,11 @@ public class GameManager : MonoBehaviour
         CurrentSmell += fartDamageSmell;
 
         // update the UI
+        
+    }
+    public void UpdateUi()
+    {
+        Debug.Log("UpdateUi");
         uiManager.UpdateGasSlider(CurrentGas);
         uiManager.UpdateSmellSlider(CurrentSmell, 1.0f);
         uiManager.UpdateSoundSlider(CurrentSound, 1.0f, () => {
@@ -230,13 +235,29 @@ public class GameManager : MonoBehaviour
                 // continue the game
                 round++;
 
-                //GameLoopSetup();
+                GameLoopSetup();
             }
         });
     }
     public void TriggerAnimation(List<ActionCard> acitonCardsPlayed, FartCard fartCardPlayed, int fartCardIndex)
     {
-
+        foreach(ActionCard card in acitonCardsPlayed)
+        {
+            if (card == null)
+            {
+                continue;
+            }
+            if(card.animation == Animations.SITIDLE1||card.animation == Animations.STANDUP|| card.animation == Animations.SITIDLE2)
+            {
+                AnimationController.instance.addToList(card.animation, new int[] { 0, 1 }, true, false);
+            }
+            else
+            {
+                AnimationController.instance.addToList(card.animation, new int[] { 1 }, true, false);
+            }
+        }
+        AnimationController.instance.StartQueue();
+        
     }
     // On play button click
     public void OnPlayButtonClicked(GameObject actionCardParent, GameObject fartCardParent)
@@ -248,7 +269,7 @@ public class GameManager : MonoBehaviour
         FartCard fartCardPlayed = new FartCard();
         foreach(Transform child in actionCardParent.transform)
         {
-            if(child.childCount > 0)
+            if(child.childCount > 0&&child.gameObject.activeSelf)
             {
                 ActionCard card = (ActionCard)child.GetChild(0).GetComponent<CardDragObject>().card;
                 actionCardsPlayed.Add(card);
@@ -265,7 +286,9 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
+        TriggerAnimation(actionCardsPlayed, fartCardPlayed, fartCardPlayedIndex);
         CalculateScore(actionCardsPlayed, fartCardPlayed, fartCardPlayedIndex);
+        uiManager.hidePlayCardPanel();
     }
 
     // Determine the end of the game

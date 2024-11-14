@@ -17,7 +17,7 @@ public class AnimatorBrain : MonoBehaviour
     };
 
     private Animator animator;
-    private Animations[] currentAnimation;
+    public Animations[] currentAnimation;
     private bool[] layerLocked;
     private Action<int> DefaultAnimation;
 
@@ -47,6 +47,7 @@ public class AnimatorBrain : MonoBehaviour
 
     public void Play(Animations animation, int layer, bool lockLayer, bool bypassLock, float crossfade = 0.2f)
     {
+        Debug.Log("Attemp to Play " + animation);
         if (animation == Animations.NONE)
         {
             DefaultAnimation(layer);
@@ -64,7 +65,12 @@ public class AnimatorBrain : MonoBehaviour
         if (currentAnimation[layer] == animation) return;
 
         currentAnimation[layer] = animation;
+        Debug.Log("Play " + animation);
         animator.CrossFade(animations[(int)currentAnimation[layer]], crossfade, layer);
+    }
+    public bool isPlaying(int layer)
+    {
+        return animator.GetCurrentAnimatorStateInfo(layer).normalizedTime < 1;
     }
 }
 

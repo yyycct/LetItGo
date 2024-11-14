@@ -17,6 +17,7 @@ MonoBehaviour:
     description: stand up
     cardType: 0
     image: {fileID: 0}
+    animation: 2
     oneTimeUse: 0
     Value:
       attention: -40
