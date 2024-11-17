@@ -17,6 +17,7 @@ MonoBehaviour:
     description: Smelly but silent
     cardType: 1
     image: {fileID: 0}
+    animation: 0
     soundAmount: 0
-    smellAmount: 60
+    smellAmount: 50
     gasAmount: 20

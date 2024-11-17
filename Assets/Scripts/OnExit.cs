@@ -54,7 +54,7 @@ public class OnExit : StateMachineBehaviour
             yield return new WaitForSeconds(stateInfo.length - crossfade);
             AnimatorBrain target = animator.GetComponent<AnimatorBrain>();
             target.SetLocked(false, layerIndex);
-            AnimationController.instance.StartQueue();
+            AnimationController.instance.PlayQueue();
         }
         IEnumerator FinishQueue()
         {

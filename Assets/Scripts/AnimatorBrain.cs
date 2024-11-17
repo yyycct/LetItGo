@@ -13,7 +13,11 @@ public class AnimatorBrain : MonoBehaviour
         Animator.StringToHash("Playing Dumb"),
         Animator.StringToHash("Stretch"),
         Animator.StringToHash("Disbelief"),
-        Animator.StringToHash("Crouching")
+        Animator.StringToHash("Crouching"),
+        Animator.StringToHash("Drinking"),
+        Animator.StringToHash("Cheering"),
+        Animator.StringToHash("Yawn"),
+        Animator.StringToHash("Make Statement"),
     };
 
     private Animator animator;
@@ -76,14 +80,18 @@ public class AnimatorBrain : MonoBehaviour
 
 public enum Animations
 {
-    SITIDLE1,
-    SITIDLE2,
-    STANDUP,
+    SIT_IDLE1,
+    SIT_IDLE2,
+    STAND_UP,
     CLAPPING,
-    PLAYDUMB,
+    PLAYING_DUMB,
     STRETCH,
     DISBELIEF,
-    Crouching,
+    CROUCHING,
+    DRINKING,
+    CHEERING,
+    YAWN,
+    MAKE_STATEMENT,
     NONE
 }
 public class AnimationPlayEvent

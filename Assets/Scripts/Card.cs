@@ -8,6 +8,12 @@ public enum CardType
     Fart,
     Environment
 }
+public enum FartType
+{
+    Smelly,
+    Average,
+    Loud
+}
 
 [System.Serializable]
 public class Card
@@ -25,6 +31,7 @@ public class FartCard : Card
     public int soundAmount;
     public int smellAmount;
     public int gasAmount;
+    public FartType fartType;
     public FartCard()
     {
         cardType = CardType.Fart;

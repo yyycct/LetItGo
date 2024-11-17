@@ -12,11 +12,16 @@ public class AnimationController : AnimatorBrain
     public bool _standUp;
     public bool _clap;
     public bool _playDumb;
+    public GameObject gasParticleSmelly;
+    public GameObject gasParticleAverage;
+    public GameObject gasParticleLoud;
     private const int FULLBODY = 0;
     private const int UPPERBODY = 1;
     private Queue<AnimationPlayEvent> listOfAnimationToPlay;
     public bool StartPlayingQueue = false;
     public UnityEvent OnQueueFinished;
+    private int fartCardIndex = 0;
+
     private void Awake()
     {
         instance = this;
@@ -26,7 +31,7 @@ public class AnimationController : AnimatorBrain
     void Start()
     {
         _animator = GetComponent<Animator>();
-        Initialize(2, Animations.SITIDLE1, _animator, DefaultAnimation);
+        Initialize(2, Animations.SIT_IDLE1, _animator, DefaultAnimation);
         listOfAnimationToPlay = new Queue<AnimationPlayEvent>();
         if(OnQueueFinished == null)
         {
@@ -63,13 +68,13 @@ public class AnimationController : AnimatorBrain
     }
     private void standUp()
     {
-            Play(Animations.STANDUP, FULLBODY, false, false);
-            Play(Animations.STANDUP, UPPERBODY, false, false);
+            Play(Animations.STAND_UP, FULLBODY, false, false);
+            Play(Animations.STAND_UP, UPPERBODY, false, false);
     }
     private void sitDown()
     {
-            Play(Animations.SITIDLE1, FULLBODY, false, false);
-            Play(Animations.SITIDLE1, UPPERBODY, false, false);
+            Play(Animations.SIT_IDLE1, FULLBODY, false, false);
+            Play(Animations.SIT_IDLE1, UPPERBODY, false, false);
 
     }
     private void clap()
@@ -82,7 +87,7 @@ public class AnimationController : AnimatorBrain
     }
     private void playDumb()
     {
-        Play(Animations.PLAYDUMB, UPPERBODY, false, true);
+        Play(Animations.PLAYING_DUMB, UPPERBODY, false, true);
     }
     public int GetListCount() { return listOfAnimationToPlay.Count; }
     public void addToList(Animations animations, int[] layers, bool lockLayer, bool bypassLock)
@@ -91,27 +96,55 @@ public class AnimationController : AnimatorBrain
         AnimationPlayEvent newEvent = new AnimationPlayEvent(animations, layers, lockLayer, bypassLock);
         listOfAnimationToPlay.Enqueue(newEvent);
     }
+    public void StartActionAnimation(FartCard fartCardPlayed, int _fartCardIndex){
+        StartPlayingQueue = true;
+        fartCardIndex = _fartCardIndex;
+        StartCoroutine(TurnToPlayFart(fartCardPlayed.fartType));
+        PlayQueue();
+    }
 
+    private void fartAnimation(FartType type){
+        switch (type)
+        {
+            case FartType.Smelly:
+                //Instantiate(gasParticleSmelly);
+                gasParticleSmelly.GetComponent<ParticleSystem>().Play();
+                break;
+            case FartType.Average:
+                gasParticleAverage.GetComponent<ParticleSystem>().Play();
+                break;
+            case FartType.Loud:
+                gasParticleLoud.GetComponent<ParticleSystem>().Play();
+                break;
+        }
+    }
+
+    IEnumerator TurnToPlayFart(FartType fartType){
+        while(fartCardIndex>0){
+            yield return null;
+        }
+        fartAnimation(fartType);
+    }
     public AnimationPlayEvent GetNextOnList()
     {
         Debug.Log("GetNextOnList");
         return listOfAnimationToPlay.Dequeue();
     }
 
-    public void StartQueue()
+    public void PlayQueue()
     {
-        Debug.Log("StartQueue");
-        StartPlayingQueue = true;
-
+        Debug.Log("PlayQueue");
         if (listOfAnimationToPlay.Count <= 0)
         {
             return;
         }
         AnimationPlayEvent playEvent = GetNextOnList();
+        fartCardIndex = 0;
         foreach (int l in playEvent.layers)
         {
             Play(playEvent.animation, l, playEvent.lockLayer, playEvent.bypassLayer);
         }
+
     }
     public void FinishedQueue()
     {

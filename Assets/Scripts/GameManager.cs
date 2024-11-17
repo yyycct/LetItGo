@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public List<ActionCardObject> actionCards = new List<ActionCardObject>();
     public List<FartCardObject> fartCards = new List<FartCardObject>();
     public List<EnvironmentObject> environmentCards = new List<EnvironmentObject>();
-    
+
     public int actionCardsPerRound = 3;
     public int roundSmellDecrease = 10;
     [Tooltip("The multiplier for the unmatch index, fart card is not under the action card")]
@@ -247,7 +247,7 @@ public class GameManager : MonoBehaviour
             {
                 continue;
             }
-            if(card.animation == Animations.SITIDLE1||card.animation == Animations.STANDUP|| card.animation == Animations.SITIDLE2)
+            if(card.animation == Animations.SIT_IDLE1||card.animation == Animations.STAND_UP|| card.animation == Animations.SIT_IDLE2)
             {
                 AnimationController.instance.addToList(card.animation, new int[] { 0, 1 }, true, false);
             }
@@ -256,7 +256,7 @@ public class GameManager : MonoBehaviour
                 AnimationController.instance.addToList(card.animation, new int[] { 1 }, true, false);
             }
         }
-        AnimationController.instance.StartQueue();
+        AnimationController.instance.StartActionAnimation(fartCardPlayed,fartCardIndex);
         
     }
     // On play button click

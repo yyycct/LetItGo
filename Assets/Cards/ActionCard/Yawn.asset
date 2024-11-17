@@ -17,7 +17,7 @@ MonoBehaviour:
     description: 
     cardType: 0
     image: {fileID: 0}
-    animation: 3
+    animation: 10
     oneTimeUse: 0
     Value:
       attention: -30
