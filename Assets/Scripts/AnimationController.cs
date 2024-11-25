@@ -158,7 +158,7 @@ public class AnimationController : AnimatorBrain
     }
     void DefaultAnimation(int layer)
     {
-
+        sitDown();
     }
     bool AnimatorIsPlaying(int index) { return _animator.GetCurrentAnimatorStateInfo(index).normalizedTime < 1; }
 }
