@@ -20,6 +20,8 @@ public class AnimationController : AnimatorBrain
     private Queue<AnimationPlayEvent> listOfAnimationToPlay;
     public bool StartPlayingQueue = false;
     public UnityEvent OnQueueFinished;
+    public UnityEvent OnFarted;
+    public UnityEvent OnClapped;
     private int fartCardIndex = 0;
 
     private void Awake()
@@ -104,6 +106,7 @@ public class AnimationController : AnimatorBrain
     }
 
     private void fartAnimation(FartType type){
+        OnFarted.Invoke();
         switch (type)
         {
             case FartType.Smelly:
@@ -143,13 +146,44 @@ public class AnimationController : AnimatorBrain
         foreach (int l in playEvent.layers)
         {
             Play(playEvent.animation, l, playEvent.lockLayer, playEvent.bypassLayer);
+            switch (playEvent.animation)
+            {
+                case Animations.SIT_IDLE1:
+                    break;
+                case Animations.SIT_IDLE2:
+                    break;
+                case Animations.STAND_UP:
+                    break;
+                case Animations.CLAPPING:
+                    OnClapped.Invoke();
+                    break;
+                case Animations.PLAYING_DUMB:
+                    break;
+                case Animations.STRETCH:
+                    break;
+                case Animations.DISBELIEF:
+                    break;
+                case Animations.CROUCHING:
+                    break;
+                case Animations.DRINKING:
+                    break;
+                case Animations.CHEERING:
+                    break;
+                case Animations.YAWN:
+                    break;
+                case Animations.MAKE_STATEMENT:
+                    break;
+                case Animations.NONE:
+                    break;
+            }
         }
 
-    }
-    public void FinishedQueue()
+     }
+        public void FinishedQueue()
     {
         StartPlayingQueue = false;
         OnQueueFinished.Invoke();
+        sitDown();
         Debug.Log("Invoke");
     }
     public void SelfReferencedEventCallback()
@@ -161,7 +195,6 @@ public class AnimationController : AnimatorBrain
         sitDown();
     }
     bool AnimatorIsPlaying(int index) { return _animator.GetCurrentAnimatorStateInfo(index).normalizedTime < 1; }
+    
 }
 
-
-    

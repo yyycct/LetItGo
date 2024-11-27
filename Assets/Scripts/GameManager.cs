@@ -24,10 +24,10 @@ public class GameManager : MonoBehaviour
     private EnvironmentCard pickedEnvironmentCard = new EnvironmentCard();
     
     private int CurrentGas = 100;
-    private int CurrentSmell = 0;
-    private int CurrentSound = 0;
-    private int round = 0;
-
+    public int CurrentSmell {get; private set;}
+    public int CurrentSound { get; private set; }
+    public int round = 0;
+    
     // Game loop:
     // 1. Get one random fart card, one random environment card, and three random action cards
     // 2. Display the cards
@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
     // 5. Repeat
     public void Start()
     {
+        CurrentSmell = 0;
+        CurrentSound = 0;
         uiManager = UIManager.instance;
         ShuffleEnvCards();
         GameLoopSetup();
